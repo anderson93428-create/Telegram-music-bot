@@ -1,6 +1,6 @@
 const yts = require("yt-search");
 
-async function searchYoutube(query) {
+async Function searchYoutube(query) {
     try {
         const result = await yts(query);
 
