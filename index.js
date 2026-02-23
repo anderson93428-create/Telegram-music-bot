@@ -24,3 +24,12 @@ return ctx.reply("❌ No encontré esa canción.");
 bot.launch()
   .then(() => console.log("🤖 Bot iniciado correctamente"))
   .catch((err) => console.error("Error al iniciar bot:", err));
+const express = require("express");
+const app = express();
+
+app.get("/", (req, res) => {
+  res.send("Bot activo 🚀");
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log("Servidor web activo"));
