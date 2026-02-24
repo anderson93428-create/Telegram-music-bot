@@ -47,12 +47,12 @@ bot.on("callback_query", async (ctx) => {
     await ctx.answerCbQuery();
 
     if (type === "mp3") {
-      const link = `https://api.vevioz.com/api/button/mp3?url=${encodeURIComponent(url)}`;
+      const link = `https://vevioz.com/download-mp3/?url=${encodeURIComponent(url)}`;
       await ctx.reply(`🎵 Descarga tu MP3 aquí:\n${link}`);
     }
 
     if (type === "video") {
-      const link = `https://api.vevioz.com/api/button/videos?url=${encodeURIComponent(url)}`;
+      const link = `https://vevioz.com/download-video/?url=${encodeURIComponent(url)}`;
       await ctx.reply(`🎬 Descarga tu video aquí:\n${link}`);
     }
 
