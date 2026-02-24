@@ -3,7 +3,7 @@ const searchYoutube = require("./functions/youtube");
 const { downloadMP3, downloadVideo } = require("./functions/download");
 const fs = require("fs");
 const express = require("express");
-
+console.log("TOKEN:", process.env.BOT_TOKEN);
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 // 🔹 Inicio
