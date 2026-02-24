@@ -1,27 +1,34 @@
-const ytDlp = require("yt-dlp-exec");
+const ytdl = require("ytdl-core");
+const fs = require("fs");
 const path = require("path");
 
-async function downloadMP3(url) {
-  const output = path.join(__dirname, "../audio.mp3");
+function downloadMP3(url) {
+  return new Promise((resolve, reject) => {
+    const output = path.join(__dirname, "../audio.mp3");
 
-  await ytDlp(url, {
-    extractAudio: true,
-    audioFormat: "mp3",
-    output
+    const stream = ytdl(url, {
+      filter: "audioonly",
+      quality: "highestaudio"
+    });
+
+    stream.pipe(fs.createWriteStream(output))
+      .on("finish", () => resolve(output))
+      .on("error", reject);
   });
-
-  return output;
 }
 
-async function downloadVideo(url) {
-  const output = path.join(__dirname, "../video.mp4");
+function downloadVideo(url) {
+  return new Promise((resolve, reject) => {
+    const output = path.join(__dirname, "../video.mp4");
 
-  await ytDlp(url, {
-    format: "mp4",
-    output
+    const stream = ytdl(url, {
+      quality: "highestvideo"
+    });
+
+    stream.pipe(fs.createWriteStream(output))
+      .on("finish", () => resolve(output))
+      .on("error", reject);
   });
-
-  return output;
 }
 
 module.exports = { downloadMP3, downloadVideo };
