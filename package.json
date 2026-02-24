@@ -1,19 +1,17 @@
 {
-  "name": "bot",
+  "name": "telegram-music-bot",
   "version": "1.0.0",
-  "description": "",
+  "description": "Bot de música con enlaces de descarga",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
     "telegraf": "^4.16.3",
     "yt-search": "^2.10.4",
-    "ytdl-core": "^4.11.5",
     "express": "^4.18.2"
   }
 }
