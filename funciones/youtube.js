@@ -1,4 +1,4 @@
-const yts = require("yt-search");
+const yts = require("@distube/ytdl-core");
 
 async function searchYoutube(query) {
 
