@@ -1,78 +1,89 @@
-const { Telegraf, Markup } = require("telegraf");
-const { searchYoutube } = require("./funciones/youtube");
-const { downloadMp3 } = require("./funciones/download");
-const fs = require("fs");
+require('dotenv').config();
 
-const bot = new Telegraf("8071971772:AAGHq45P6pbLJwLVGWLTFQLKrVIdeZHNPAo");
+const { Telegraf } = require('telegraf');
+const ytdlp = require('yt-dlp-exec');
+const fs = require('fs');
 
-const results = {};
+const bot = new Telegraf(process.env.BOT_TOKEN);
 
 bot.start((ctx) => {
-  ctx.reply("🎵 Hola!\n\nEnvíame el nombre de una canción.");
+  ctx.reply("👋 Bienvenido.\n\nEnvíame un link de YouTube y podrás descargar:\n🎵 Música (MP3)\n🎬 Video (MP4)");
 });
 
-bot.on("text", async (ctx) => {
+bot.on('text', async (ctx) => {
 
-  const query = ctx.message.text;
+  const url = ctx.message.text;
 
-  if (query.startsWith("/")) return;
+  if (url.includes("youtube.com") || url.includes("youtu.be")) {
 
-  await ctx.reply("🔎 Buscando canciones...");
+    await ctx.reply("¿Qué deseas descargar?", {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: "🎵 Descargar Música (MP3)", callback_data: "mp3|" + url }],
+          [{ text: "🎬 Descargar Video (MP4)", callback_data: "mp4|" + url }]
+        ]
+      }
+    });
 
-  const videos = await searchYoutube(query);
+  } else {
 
-  if (!videos.length) {
-    return ctx.reply("❌ No encontré resultados.");
+    ctx.reply("⚠️ Envíame un link válido de YouTube.");
+
   }
 
-  results[ctx.from.id] = videos;
-
-  const buttons = videos.map((v, i) =>
-    [Markup.button.callback(`${i + 1}. ${v.title}`, `song_${i}`)]
-  );
-
-  ctx.reply(
-    "🎵 Selecciona una canción:",
-    Markup.inlineKeyboard(buttons)
-  );
-
 });
 
-bot.action(/song_(\d+)/, async (ctx) => {
+bot.on("callback_query", async (ctx) => {
 
-  const index = ctx.match[1];
-  const userResults = results[ctx.from.id];
-
-  if (!userResults) return;
-
-  const video = userResults[index];
-
-  await ctx.replyWithPhoto(video.thumbnail, {
-    caption: `🎵 ${video.title}\n⬇️ Descargando audio...`
-  });
+  const data = ctx.callbackQuery.data;
+  const [type, url] = data.split("|");
 
   try {
 
-    const filePath = await downloadMp3(video.url);
+    if (type === "mp3") {
 
-    await ctx.replyWithAudio({
-      source: filePath
-    });
+      await ctx.reply("🎵 Descargando música...");
 
-    fs.unlinkSync(filePath);
+      const file = "audio.mp3";
+
+      await ytdlp(url, {
+        extractAudio: true,
+        audioFormat: "mp3",
+        output: file
+      });
+
+      await ctx.replyWithAudio({ source: file });
+
+      fs.unlinkSync(file);
+
+    }
+
+    if (type === "mp4") {
+
+      await ctx.reply("🎬 Descargando video...");
+
+      const file = "video.mp4";
+
+      await ytdlp(url, {
+        format: "mp4",
+        output: file
+      });
+
+      await ctx.replyWithVideo({ source: file });
+
+      fs.unlinkSync(file);
+
+    }
 
   } catch (error) {
 
     console.log(error);
-    ctx.reply("❌ Error descargando la canción.");
+    ctx.reply("❌ Ocurrió un error descargando el archivo.");
 
   }
 
 });
 
-bot.launch().then(() => {
-  console.log("Bot iniciado correctamente");
-}).catch(console.error);
+bot.launch();
 
-process.once("SIGINT", () => bot.stop("SIGINT"));
-process.once("SIGTERM", () => bot.stop("SIGTERM"));
+console.log("🤖 Bot funcionando...");
