@@ -70,5 +70,9 @@ bot.action(/song_(\d+)/, async (ctx) => {
 
 });
 
-bot.launch()
-.then(() => console.log("🤖 Bot avanzado iniciado"));
+bot.launch().then(() => {
+  console.log("Bot iniciado correctamente");
+}).catch(console.error);
+
+process.once("SIGINT", () => bot.stop("SIGINT"));
+process.once("SIGTERM", () => bot.stop("SIGTERM"));
