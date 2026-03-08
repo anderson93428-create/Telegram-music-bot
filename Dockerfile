@@ -10,8 +10,10 @@ RUN apt-get update && apt-get install -y \
     yt-dlp \
     python3 \
     python3-pip \
-    build-essential \
-    git
+    build-essential
+
+# crear alias python -> python3
+RUN ln -s /usr/bin/python3 /usr/bin/python
 
 # instalar dependencias node
 RUN npm install
