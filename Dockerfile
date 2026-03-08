@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
     build-essential
-
+RUN yt-dlp -U
 # crear alias python -> python3
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
