@@ -1,44 +1,47 @@
+const ytdlp = require('yt-dlp-exec');
 const fs = require('fs');
-const play = require('play-dl');
-const { exec } = require('child_process');
+const path = require('path');
 
-// 🔊 AUDIO
+// 📁 Ruta de cookies
+const cookiesPath = path.join(__dirname, '../cookies.txt');
+
+// 🎵 DESCARGAR AUDIO (MP3)
 async function downloadAudio(url) {
+  const file = `audio_${Date.now()}.mp3`;
 
-  const file = "audio.mp3";
-
-  const stream = await play.stream(url, { quality: 2 });
-
-  const writeStream = fs.createWriteStream(file);
-
-  return new Promise((resolve, reject) => {
-
-    stream.stream.pipe(writeStream);
-
-    writeStream.on('finish', () => {
-      resolve(file);
+  try {
+    await ytdlp(url, {
+      extractAudio: true,
+      audioFormat: "mp3",
+      output: file,
+      cookies: cookiesPath
     });
 
-    writeStream.on('error', reject);
+    return file;
 
-  });
-
+  } catch (error) {
+    console.error("❌ Error descargando audio:", error);
+    throw new Error("Error al descargar audio");
+  }
 }
 
-// 🎬 VIDEO
+// 🎬 DESCARGAR VIDEO (MP4)
 async function downloadVideo(url) {
+  const file = `video_${Date.now()}.mp4`;
 
-  const file = "video.mp4";
-
-  return new Promise((resolve, reject) => {
-
-    exec(`ffmpeg -i "${url}" -c copy ${file}`, (error) => {
-      if (error) return reject(error);
-      resolve(file);
+  try {
+    await ytdlp(url, {
+      format: "mp4",
+      output: file,
+      cookies: cookiesPath
     });
 
-  });
+    return file;
 
+  } catch (error) {
+    console.error("❌ Error descargando video:", error);
+    throw new Error("Error al descargar video");
+  }
 }
 
 module.exports = {

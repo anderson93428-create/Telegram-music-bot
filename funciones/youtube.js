@@ -1,15 +1,15 @@
-const yts = require("yt-search");
+const ytdlp = require('yt-dlp-exec');
+const fs = require('fs');
 
-async function searchYoutube(query) {
+async function downloadVideo(url) {
+  const file = "video.mp4";
 
-  const r = await yts(query);
+  await ytdlp(url, {
+    format: "mp4",
+    output: file
+  });
 
-  return r.videos.slice(0,5).map(v => ({
-    title: v.title,
-    url: v.url,
-    thumbnail: v.thumbnail
-  }));
-
+  return file;
 }
 
-module.exports = { searchYoutube };
+module.exports = { downloadVideo };
